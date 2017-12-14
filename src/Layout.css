@@ -1,0 +1,36 @@
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.layout-container > .preview {
+  position: absolute;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.layout-container > .drag {
+  position: absolute;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+}
+
+.layout-container > .drag * {
+  pointer-events: none !important;
+}
+
+.layout-container > .drag.dragging {
+  display: block;
+}
+
+.layout-container .drag > .view {
+  height: 100%;
+  width: 100%;
+}

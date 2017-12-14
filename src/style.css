@@ -1,0 +1,96 @@
+/* Layout Styling */
+.layout-container,
+.split {
+  background: transparent;
+}
+
+.layout-container > * {
+  margin: 4px;
+  box-sizing: border-box;
+}
+
+/* all views */
+.layout-container .view {
+  border: solid 1px transparent;
+  transition: all 0.3s;
+}
+
+/* preview */
+.layout-container > .preview {
+  background: rgba(155, 155, 155, 0.4);
+  border: dashed 1px #666;
+  transition: all 0.3s;
+}
+
+/* drag layer */
+.layout-container > .drag {
+  display: block;
+  opacity: 0;
+  transform: scale(1) translate(0%, 0%);
+  transition: transform 0.3s;
+}
+
+.layout-container > .drag.dragging {
+  opacity: 0.7;
+  box-shadow: 0 0 20px 4px rgba(0, 0, 0, 0.4);
+  transform: scale(0.5) translate(0%, 0%);
+}
+
+/* Splitter styling */
+.split > .splitter {
+  flex-basis: 8px;
+  position: relative;
+  background: transparent;
+  transition: all 0.3s;
+}
+
+.split.resizeable > .splitter:hover,
+.split.resizeable.resizing > .splitter {
+  background: rgba(100, 100, 100, 0.4);
+  transition: all 0.3s;
+}
+
+.split.resizeable > .splitter::after {
+  background: transparent;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  content: " ";
+  transition: all 0.3s;
+}
+
+.split.resizeable.resizing > .splitter::after,
+.split.resizeable > .splitter:hover::after {
+  background: rgba(100, 100, 100, 0.2);
+  transition: all 0.3s;
+}
+
+.split.resizeable.horizontal > .splitter:hover::after {
+  left: -3px;
+  right: -3px;
+}
+
+.split.resizeable.vertical > .splitter:hover::after {
+  top: -3px;
+  bottom: -3px;
+}
+
+/* Pane styling */
+.pane {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.pane > .header {
+  text-transform: uppercase;
+  background: #eee;
+  color: #444;
+}
+
+.pane > .content {
+  background: #fefefe;
+  padding: 10px;
+}

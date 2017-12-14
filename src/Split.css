@@ -1,0 +1,39 @@
+.split {
+  display: flex;
+  flex: 1;
+}
+
+.split > .content {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.split > .content > * {
+  flex: 1;
+  height: 100%;
+}
+
+.split > .content:last-child {
+  flex: 1;
+}
+
+.split > .splitter {
+  flex-basis: 4px;
+}
+
+.split.vertical {
+  flex-direction: column;
+}
+
+.split.horizontal {
+  flex-direction: row;
+}
+
+.split.resizeable.vertical > .splitter {
+  cursor: s-resize;
+}
+
+.split.resizeable.horizontal > .splitter {
+  cursor: e-resize;
+}
