@@ -2,17 +2,45 @@
 
 > vue split drag layout
 
-## Build Setup
+`place image gif here`
 
-``` bash
-# install dependencies
-npm install
+## Install
 
-# serve with hot reload at localhost:8080
-npm run dev
+## Usage
 
-# build for production with minification
-npm run build
+```vue
+...
+<template>
+  <div id="app">
+  <Layout :splits="this.tree">
+    <div class="view1"></div>
+    <Pane title="pane">content</Pane>
+    <div class="view2"></div>
+  </Layout>
+
+  </div>
+</template>
+<script>
+  import {Layout,Pane} from 'vue-split-layout'
+
+  export default {
+    components: {Layout}
+    data () {
+      // Setup initial tree
+      // and pass it as a prop
+      return {
+        tree: // ...
+      }
+    }
+</script>
+...
 ```
 
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
+`place functional demo somewhere`
+
+## Build Setup
+
+```bash
+# install dependencies
+npm install vue-split-layout
+```

@@ -1,14 +1,17 @@
 {
   "name": "vue-split-layout",
   "description": "vue split drag layout",
-  "version": "1.0.0",
+  "version": "0.0.1",
 	"main":"build/vue-split-layout.js",
   "author": {
 		"name": "Luis Figueiredo",
-		"email": "luisf@hexasoftware.com>",
+		"email": "luisf@hexasoftware.com>"
+	},
+	"repository": {
+		"type":"git",
+		"url": "https://github.com/vue-hxs/vue-split-layout"
 	},
   "license": "MIT",
-  "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --content-base demo",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
