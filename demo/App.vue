@@ -122,6 +122,8 @@ body {
   background: rgba(0, 0, 0, 0.2);
   border: dashed 1px #666;
   transition: all 0.3s;
+  padding:0;
+  margin:0;
 }
 .extra .layout-container > .drag { display: block; opacity: 0; transform: scale(1); }
 .extra .layout-container > .drag.dragging {
