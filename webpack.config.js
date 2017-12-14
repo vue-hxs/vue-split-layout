@@ -66,8 +66,8 @@ if (process.env.NODE_ENV === 'development') {
   Object.assign(module.exports, {
     entry: './demo/main.js',
     output: {
-      path: path.resolve(__dirname, './demo/dist'),
-      publicPath: '/',
+      path: path.resolve(__dirname, './docs'),
+      publicPath: '/vue-split-layout/',
       filename: 'index.js'
     }
   })

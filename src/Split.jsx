@@ -31,8 +31,8 @@ export default Vue.component('Split', {
       event.preventDefault()
       // Resizing operation else where?
       const objProps = {
-        'horizontal': {dimProp: 'width', mouseProp: 'clientX', posProp: 'x'},
-        'vertical': {dimProp: 'height', mouseProp: 'clientY', posProp: 'y'}
+        'horizontal': {dimProp: 'width', mouseProp: 'clientX', posProp: 'left'},
+        'vertical': {dimProp: 'height', mouseProp: 'clientY', posProp: 'top'}
       }
       const {dimProp, mouseProp, posProp} = objProps[this.dir]
 
@@ -40,7 +40,6 @@ export default Vue.component('Split', {
       var splitter = el.children[1].getBoundingClientRect()[dimProp] / 2
       var parentRect = el.getBoundingClientRect()
       var splitSize = (event[mouseProp] - parentRect[posProp] - splitter) / parentRect[dimProp] * 100
-
       var splitStyle = splitSize + '%'
       // Set local referer state
       this.state.split = splitStyle

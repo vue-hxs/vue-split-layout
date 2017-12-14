@@ -2,9 +2,13 @@
 
 > vue split drag layout
 
-`place image gif here`
+[https://vue-hxs.github.io/vue-split-layout/](https://vue-hxs.github.io/vue-split-layout/)
 
 ## Install
+
+```bash
+npm install --save vue-split-layout
+```
 
 ## Usage
 
@@ -43,14 +47,7 @@ export default {
 ...
 ```
 
-`place functional demo somewhere`
-
 ## Build Setup
-
-```bash
-# install dependencies
-npm install vue-split-layout
-```
 
 ## TODO
 

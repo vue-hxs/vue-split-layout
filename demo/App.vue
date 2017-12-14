@@ -1,3 +1,19 @@
+<template>
+  <div class="app">
+    <div class="controls">
+      <button :class="{active:state.edit}" @click="toggleEdit">Toggle editable <span></span></button>
+      <button :class="{active:state.resize}" @click="toggleResize">Toggle resizeable <span></span></button>
+      <button @click="bothOn">Toggle On both</button>
+    </div>
+
+    <Layout :edit="state.edit" :resize="state.resize" :splits="state.splits">
+      <div class="nopane" >Also drag me <button>random button </button><ul><li>Random</li><li>list</li></ul><div>{{state.edit}}</div></div>
+      <Pane title="Drag me'">testing</Pane>
+      <Pane title="Drag me too">Stuff<MyInput /></Pane>
+    </Layout>
+  </div>
+</template>
+
 <script>
 import Vue from 'vue'
 import {Layout, Pane} from '../src'
@@ -24,7 +40,6 @@ export default {
       },
       second: 1
     }
-
     return {
       state: {
         edit: false,
@@ -50,26 +65,7 @@ export default {
 }
 </script>
 
-<template>
-  <div class="app">
-    <div class="controls">
-      <button :class="{active:state.edit}" @click="toggleEdit">Toggle editable <span></span></button>
-      <button :class="{active:state.resize}" @click="toggleResize">Toggle resizeable <span></span></button>
-      <button @click="bothOn">Toggle On both</button>
-    </div>
-
-    <Layout :edit="state.edit" :resize="state.resize" :splits="state.splits">
-      <div class="nopane" >Also drag me <button>random button </button><ul><li>Random</li><li>list</li></ul><div>{{state.edit}}</div></div>
-      <Pane :title="(state.edit)?'Drag me':'im static'">testing</Pane>
-      <Pane title="Drag me too">Stuff<MyInput /></Pane>
-    </Layout>
-  </div>
-</template>
-
 <style>
-.nopane *{
-  background: rgba(250,250,0,0.2);
-}
 * { text-shadow: 0px 0px 1px rgba(0,0,0,0.2); }
 body {
   margin:0;
