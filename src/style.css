@@ -50,34 +50,6 @@
   transition: all 0.3s;
 }
 
-.split.resizeable > .splitter::after {
-  background: transparent;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 10;
-  content: " ";
-  transition: all 0.3s;
-}
-
-.split.resizeable.resizing > .splitter::after,
-.split.resizeable > .splitter:hover::after {
-  background: rgba(100, 100, 100, 0.2);
-  transition: all 0.3s;
-}
-
-.split.resizeable.horizontal > .splitter:hover::after {
-  left: -3px;
-  right: -3px;
-}
-
-.split.resizeable.vertical > .splitter:hover::after {
-  top: -3px;
-  bottom: -3px;
-}
-
 /* Pane styling */
 .pane {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);

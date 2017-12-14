@@ -1,7 +1,8 @@
 import Layout from './Layout'
 import Split from './Split'
 import Pane from './Pane'
-import './style.css'
+import Tree from './tree'
 // Default styling
-//
-export {Layout, Pane, Split}
+import './style.css'
+
+export {Layout, Pane, Split, Tree}

@@ -1,11 +1,12 @@
 var path = require('path')
 var webpack = require('webpack')
+var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, './build'),
-    publicPath: '/dist/',
+    path: path.resolve(__dirname, './dist'),
+    publicPath: '/dist',
     filename: 'vue-split-layout.js',
     libraryTarget: 'commonjs2'
   },
@@ -41,9 +42,6 @@ module.exports = {
       }
     ]
   },
-  externals: {
-    'vue': 'vue'
-  },
   resolve: {
     alias: {
       'vue$': 'vue/dist/vue.esm.js'
@@ -62,6 +60,20 @@ module.exports = {
     hints: false
   },
   devtool: '#eval-source-map'
+}
+
+if (process.env.NODE_ENV === 'development') {
+  Object.assign(module.exports, {
+    entry: './demo/main.js',
+    output: {
+      path: path.resolve(__dirname, './demo/dist'),
+      publicPath: '/',
+      filename: 'index.js'
+    }
+  })
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new HtmlWebpackPlugin({ filename: 'index.html', template: 'demo/index.html' })
+  ])
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -83,4 +95,5 @@ if (process.env.NODE_ENV === 'production') {
       minimize: true
     })
   ])
+  module.exports.externals = { 'vue': 'vue' }
 }

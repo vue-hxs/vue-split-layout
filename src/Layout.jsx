@@ -51,26 +51,35 @@ function checkAttach (targetDom, e, amount) {
 }
 
 export default Vue.component('Layout', {
-  props: ['edit', 'resize'],
-  data () {
-    this.state = {
-      nodes: [], // this is an array
-      drag: null,
-      edit: true,
-      resize: true
-    }
-
+  props: ['edit', 'resize', 'splits'],
+  created () {
     this.views = this.$slots.default.filter(v => v.tag !== undefined)
+  },
+  data () {
+    console.log('Building tree from:', this.splits)
+    const root = []
+    const tree = Tree.from(root)
 
-    const tree = Tree.from(this.state.nodes)
-    // This is hard coded
-    const root = {type: 'pane', viewId: 1}
-    tree.push(root) // Just add
-    const child1 = tree.attachChild(root, 3, {type: 'pane', viewId: 2}, 50)
-    tree.attachChild(child1, 0, {type: 'pane', viewId: 0}, 50)
-
+    const walk = (node) => {
+      // See node check if object or viewId
+      if (node instanceof Object) {
+        let split = tree.push({type: 'split', dir: node.dir, split: node.size})
+        walk(node.first).parent = split
+        walk(node.second).parent = split
+        return split
+      }
+      return tree.push({type: 'view', viewId: node})
+      // Its a view, with only id
+    }
+    walk(this.splits)
+    // Read splits properly
+    //
+    //
     return {
-      state: this.state
+      state: {
+        nodes: root, // this is an array
+        drag: null
+      }
     }
   },
   methods: {
@@ -122,7 +131,6 @@ export default Vue.component('Layout', {
       }
     },
     onViewDragStart (e) { // We could pass dom here?
-      console.log('Event:', e)
       const nodeId = parseInt(e.target.getAttribute('node-id'), 10)
       if (nodeId === undefined) {
         return
@@ -158,12 +166,10 @@ export default Vue.component('Layout', {
       document.addEventListener('mouseup', this.onViewDrop)
     },
     onViewDrag (e) {
-      // if move and button is not clicked we restore views
       e.preventDefault()
       e.stopPropagation()
 
       const containerRect = this.$refs.container.getBoundingClientRect()
-      // const trect = this._drag.getBoundingClientRect()
       const rel = {
         x: e.clientX - containerRect.left,
         y: e.clientY - containerRect.top
@@ -212,8 +218,7 @@ export default Vue.component('Layout', {
     }
 
   },
-  // DOM REACT HACK
-
+  // DOM VUE/REACT HACK
   beforeUpdate () {
     if (!this.$refs.container) { return }
     var els = this.$refs.container.querySelectorAll('[target-view]')
@@ -235,28 +240,23 @@ export default Vue.component('Layout', {
       switch (node.type) {
         case 'split':
           var children = Tree.from(this.state.nodes).childrenOf(node).map(k => walk(k))
-          return (<Split key={node.id} node-id={node.id} resizeable={!this.state.drag ? this.state.resize : false} dir={node.dir} split={node.split} onSplitResize={this.onSplitResize}>
+          return (<Split key={node.id} node-id={node.id} resizeable={!this.state.drag ? this.resize : false} dir={node.dir} split={node.split}>
             {children}
           </Split>)
-        case 'pane':
-          if (this.state.edit) {
+        default:
+          if (this.edit) {
             return (<div class={'view'} node-id={node.id} target-view={'view-' + node.viewId} onmousedown={this.onViewDragStart}></div>)
           }
           return (<div class={'view'} node-id={node.id} target-view={'view-' + node.viewId}></div>)
-        default:
-          return (<div>Nothing</div>)
       }
     }
     const tree = walk(this.state.nodes[0])
     const layoutClass = [
       'layout-container',
-      this.state.edit ? 'edit' : ''
+      this.edit ? 'edit' : ''
     ]
     return (
       <div class={layoutClass.join(' ')} ref="container">
-        <button onClick={(e) => { this.state.edit = !this.state.edit }}>Toggle editable {this.state.edit.toString()}</button>
-        <button onClick={(e) => { this.state.resize = !this.state.resize }}>Toggle resizeable {this.state.resize.toString()}</button>
-        <button onClick={(e) => { this.state.resize = true; this.state.edit = true }}>Toggle On both</button>
         {tree}
         <div class="preview" ref="preview"></div>
         <div
