@@ -1,9 +1,10 @@
 <template>
-  <div class="app">
+  <div :class="['app', state.extraStyle?'extra':'']">
     <div class="controls">
       <button :class="{active:state.edit}" @click="toggleEdit">Toggle editable <span></span></button>
       <button :class="{active:state.resize}" @click="toggleResize">Toggle resizeable <span></span></button>
       <button @click="bothOn">Toggle On both</button>
+      <button :class="{active:state.extraStyle}" @click="toggleStyle">toggle Style</button>
     </div>
 
     <Layout :edit="state.edit" :resize="state.resize" :splits="state.splits">
@@ -42,6 +43,7 @@ export default {
     }
     return {
       state: {
+        extraStyle: false,
         edit: false,
         resize: false,
         splits: splits
@@ -59,6 +61,9 @@ export default {
     },
     bothOn () {
       this.state.edit = this.state.resize = true
+    },
+    toggleStyle () {
+      this.state.extraStyle = !this.state.extraStyle
     }
 
   }
@@ -109,47 +114,47 @@ body {
 }
 .controls button.active::after { left: 10%; width:80%; }
 /* Custom Styling */
-.layout-container, .split { background: #ddd; }
-.layout-container > * { margin: 8px; }
-.layout-container .view { border: solid 1px transparent; transition: all 0.3s; }
-.layout-container.edit .view { border: dotted 1px rgba(100, 100, 100, 0.4); }
-.layout-container > .preview {
+.extra .layout-container, .split { background: #ddd; }
+.extra .layout-container > * { margin: 8px; }
+.extra .layout-container .view { border: solid 1px transparent; transition: all 0.3s; }
+.extra .layout-container.edit .view { border: dotted 1px rgba(100, 100, 100, 0.4); }
+.extra .layout-container > .preview {
   background: rgba(0, 0, 0, 0.2);
   border: dashed 1px #666;
   transition: all 0.3s;
 }
-.layout-container > .drag { display: block; opacity: 0; transform: scale(1); }
-.layout-container > .drag.dragging {
+.extra .layout-container > .drag { display: block; opacity: 0; transform: scale(1); }
+.extra .layout-container > .drag.dragging {
   opacity: 0.7;
   box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.4);
   transform: scale(0.5);
   transition: transform 0.3s;
 }
-.layout-container > .drag * { pointer-events: none !important; }
+.extra .layout-container > .drag * { pointer-events: none !important; }
 
-.split > .splitter {
+.extra .split > .splitter {
   flex-basis: 6px;
   position: relative;
   background: transparent;
   transition: all 0.3s;
 }
-.split.resizeable > .splitter { background: rgba(100, 100, 100, 0.2); }
-.split.resizeable > .splitter::after {
+.extra .split.resizeable > .splitter { background: rgba(100, 100, 100, 0.2); }
+.extra .split.resizeable > .splitter::after {
   position: absolute;
   content: " ";
   z-index:10;
   transition:all .3s;
   top:0; right: 0; bottom:0; left:0;
 }
-.split.resizeable.horizontal > .splitter::after { right: -4px; left: -4px; }
-.split.resizeable.vertical > .splitter::after { top: -4px; bottom: -4px; }
+.extra .split.resizeable.horizontal > .splitter::after { right: -4px; left: -4px; }
+.extra .split.resizeable.vertical > .splitter::after { top: -4px; bottom: -4px; }
 
-.split.resizeable.resizing > .splitter::after,
-.split.resizeable > .splitter:hover::after {
+.extra .split.resizeable.resizing > .splitter::after,
+.extra .split.resizeable > .splitter:hover::after {
   background: rgba(100, 100, 100, 0.2);
 }
 
-.pane { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3); overflow: hidden; }
-.pane > .header { text-transform: uppercase; background: #eee; color: #444; }
-.pane > .content { background: #fefefe; padding: 10px; }
+.extra .pane { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3); overflow: hidden; }
+.extra .pane > .header { text-transform: uppercase; background: #eee; color: #444; }
+.extra .pane > .content { background: #fefefe; padding: 10px; }
 </style>
