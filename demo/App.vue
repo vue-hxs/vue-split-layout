@@ -1,10 +1,10 @@
 <template>
   <div :class="['app', state.extraStyle?'extra':'']">
     <div class="controls">
-      <button :class="{active:state.edit}" @click="toggleEdit">Toggle editable <span></span></button>
-      <button :class="{active:state.resize}" @click="toggleResize">Toggle resizeable <span></span></button>
-      <button @click="bothOn">Toggle On both</button>
-      <button :class="{active:state.extraStyle}" @click="toggleStyle">toggle Style</button>
+      <button @click="toggleEdit" :class="{active:state.edit}" >Toggle editable <span></span></button>
+      <button @click="toggleResize" :class="{active:state.resize}">Toggle resizeable <span></span></button>
+      <button @click="toggleBoth" :class="{active: state.edit && state.resize}">Toggle both</button>
+      <button @click="toggleStyle" :class="{active:state.extraStyle}">toggle Style</button>
     </div>
 
     <Layout :edit="state.edit" :resize="state.resize" :splits="state.splits">
@@ -44,8 +44,8 @@ export default {
     return {
       state: {
         extraStyle: false,
-        edit: false,
-        resize: false,
+        edit: true,
+        resize: true,
         splits: splits
       },
       hi: 'world'
@@ -59,7 +59,11 @@ export default {
     toggleResize () {
       this.state.resize = !this.state.resize
     },
-    bothOn () {
+    toggleBoth () {
+      if (this.state.edit || this.state.resize) {
+        this.state.edit = this.state.resize = false
+        return
+      }
       this.state.edit = this.state.resize = true
     },
     toggleStyle () {
