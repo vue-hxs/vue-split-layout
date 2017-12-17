@@ -47,13 +47,11 @@ export default {
 ...
 ```
 
-## Build Setup
-
 ## TODO
 
 * [ ] Better way for naming views instead of their indexes
 * [ ] Improve rendering, if a view state(props) is update outside layout, the
-      view isn't update
+      view isn't updated
 * [ ] Persist creating an change $emit with possibily the tree json (also for
       split)
 * [ ] Makes views draggable from some menu so we can add new views

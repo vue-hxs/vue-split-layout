@@ -22,6 +22,7 @@ export default Vue.component('Split', {
   methods: {
     startResize (event) {
       event.stopPropagation()
+      event.preventDefault()
       this.state.resizing = true
       document.addEventListener('mousemove', this.splitResize)
       document.addEventListener('mouseup', this.stopResize)
@@ -44,6 +45,7 @@ export default Vue.component('Split', {
       // Set local referer state
       this.state.split = splitStyle
 
+      this.$emit('onSplitResize', event, this, splitStyle)
       // Callback ??? emit
       // if (this.props.onSplitResize) {
       // this.props.onSplitResize(this, splitStyle)

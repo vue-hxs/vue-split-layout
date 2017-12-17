@@ -56,10 +56,8 @@ export default Vue.component('Layout', {
     this.views = this.$slots.default.filter(v => v.tag !== undefined)
   },
   data () {
-    console.log('Building tree from:', this.splits)
     const root = []
     const tree = Tree.from(root)
-
     const walk = (node) => {
       // See node check if object or viewId
       if (node instanceof Object) {
@@ -73,18 +71,16 @@ export default Vue.component('Layout', {
     }
     walk(this.splits)
     // Read splits properly
-    //
-    //
     return {
       state: {
-        nodes: root, // this is an array
-        drag: null
+        nodes: root // this is an array
       }
     }
   },
   methods: {
     // wait on this
-    onSplitResize (split, size) {
+    onSplitResize (e, split, size) {
+      console.log('Split resizing:', split, size)
       // Slow probably
       const nodeId = split.props['node-id']
       this.setState(ps => {
@@ -130,6 +126,7 @@ export default Vue.component('Layout', {
         this.$refs.preview.style[k] = previewPos[k] + 'px'
       }
     },
+
     onViewDragStart (e) { // We could pass dom here?
       const nodeId = parseInt(e.target.getAttribute('node-id'), 10)
       if (nodeId === undefined) {
@@ -139,20 +136,17 @@ export default Vue.component('Layout', {
       if (node === undefined) {
         return
       }
+      e.preventDefault()
+      e.stopPropagation()
+
       const containerRect = this.$refs.container.getBoundingClientRect()
-      const trect = e.target.getBoundingClientRect()
+      const trect = e.target.getBoundingClientRect() // Target is draggable
 
-      const savedNodes = _.cloneDeep(this.state.nodes)
-      const rel = {
-        x: e.clientX,
-        y: e.clientY
-      }
-
-      this.state.drag = {
+      this.drag = {
         node: node,
-        offset: {x: rel.x - trect.left, y: rel.y - trect.top}
+        offset: {x: e.clientX - trect.left, y: e.clientY - trect.top}
       }
-      this.state.savedNodes = savedNodes
+      this.state.savedNodes = _.cloneDeep(this.state.nodes)
       Tree.from(this.state.nodes).removeChild(node)
 
       // Direct DOM because its faster and we don't need state
@@ -165,20 +159,28 @@ export default Vue.component('Layout', {
       document.addEventListener('mousemove', this.onViewDrag)
       document.addEventListener('mouseup', this.onViewDrop)
     },
+
     onViewDrag (e) {
       e.preventDefault()
       e.stopPropagation()
+      this.drag.over = null // reset over
 
       const containerRect = this.$refs.container.getBoundingClientRect()
       const rel = {
         x: e.clientX - containerRect.left,
         y: e.clientY - containerRect.top
       }
+      // move drag as expected
+      this.$refs.drag.style.left = (rel.x - this.drag.offset.x) + 'px'
+      this.$refs.drag.style.top = (rel.y - this.drag.offset.y) + 'px'
 
-      this.$refs.drag.style.left = (rel.x - this.state.drag.offset.x) + 'px'
-      this.$refs.drag.style.top = (rel.y - this.state.drag.offset.y) + 'px'
+      // Disable drag temporarly to get below element
+      this.$refs.drag.style.pointerEvents = 'none'
+      var el = document.elementFromPoint(e.clientX, e.clientY)
+      this.$refs.drag.style.pointerEvents = null
 
-      var viewDom = e.target
+      // find parent
+      var viewDom = el
       for (; viewDom && viewDom.matches && !viewDom.matches('.view'); viewDom = viewDom.parentNode) {}
       if (!viewDom || !viewDom.matches) {
         this.previewPane(-1)
@@ -186,35 +188,32 @@ export default Vue.component('Layout', {
       }
 
       var attach = checkAttach(viewDom, e)
+      if (attach !== -1) {
+        this.drag.over = {viewDom, attach}
+      }
       this.previewPane(attach, viewDom)
     },
     onViewDrop (e) {
       document.removeEventListener('mousemove', this.onViewDrag)
       document.removeEventListener('mouseup', this.onViewDrop)
+      // this.$refs.drag.style.pointerEvents = 'none'
+      // reset drag styling to 0 or simply display:none
+      this.$refs.drag.style.right = this.$refs.drag.style.bottom =
+        this.$refs.drag.style.left = this.$refs.drag.style.width =
+        this.$refs.drag.style.height = 0
+
       this.previewPane(-1) // disable preview
-
-      var viewDom = e.target
-      for (; viewDom && viewDom.matches && !viewDom.matches('.view'); viewDom = viewDom.parentNode) {}
-      if (!viewDom || !viewDom.matches) {
-        this.state.drag = null
-        this.state.nodes = this.state.savedNodes
+      if (this.drag.over == null) {
+        this.drag = null
+        this.state.nodes = this.state.savedNodes // rollback
         return
       }
-      var attach = checkAttach(viewDom, e)
-      if (attach === -1) {
-        this.state.drag = null
-        this.state.nodes = this.state.savedNodes
-        return
-      }
-
+      var {viewDom, attach} = this.drag.over
       var nodeId = parseInt(viewDom.getAttribute('node-id'), 10)
       var tree = Tree.from(this.state.nodes)
       var node = tree.findById(nodeId)
-      tree.attachChild(node, attach, this.state.drag.node)
-      this.state.drag = null
-    },
-    attachViews () {
-      console.log('this', this)
+      tree.attachChild(node, attach, this.drag.node)
+      this.drag = null
     }
 
   },
@@ -234,13 +233,12 @@ export default Vue.component('Layout', {
         e.appendChild(this.$refs.container.querySelector('[src-view=' + e.getAttribute('target-view') + ']').children[0])
       })
     })
-
     // Layout renderer, build children
     const walk = (node) => {
       switch (node.type) {
         case 'split':
           var children = Tree.from(this.state.nodes).childrenOf(node).map(k => walk(k))
-          return (<Split key={node.id} node-id={node.id} resizeable={!this.state.drag ? this.resize : false} dir={node.dir} split={node.split}>
+          return (<Split key={node.id} node-id={node.id} resizeable={this.resize} dir={node.dir} split={node.split} onSplitResize={this.onSplitResize}>
             {children}
           </Split>)
         default:
@@ -257,21 +255,23 @@ export default Vue.component('Layout', {
     ]
     return (
       <div class={layoutClass.join(' ')} ref="container">
-        {tree}
+        <div class="views" ref="views">
+          {tree}
+        </div>
         <div class="preview" ref="preview"></div>
         <div
-          class={'drag ' + (this.state.drag ? 'dragging' : '')}
+          class={'drag ' + (this.drag ? 'dragging' : '')}
           ref="drag"
-          style={{'transformOrigin': this.state.drag ? (this.state.drag.offset.x + 'px ' + this.state.drag.offset.y + 'px') : ''}}>
+          style={{'transformOrigin': this.drag ? (this.drag.offset.x + 'px ' + this.drag.offset.y + 'px') : ''}}>
           {
-            this.state.drag &&
+            this.drag &&
             <div
               class="view"
-              target-view={'view-' + this.state.drag.node.viewId}
+              target-view={'view-' + this.drag.node.viewId}
             />
           }
         </div>
-        <div ref={(el) => { this._viewcontainer = el }} style={{display: 'none'}}>
+        <div style={{display: 'none'}}>
           {this.views.map((view, i) => {
             return (<div key={i} src-view={'view-' + i}> {view} </div>)
           })}

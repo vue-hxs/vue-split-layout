@@ -31,9 +31,9 @@
 }
 
 .split.resizeable.vertical > .splitter {
-  cursor: s-resize;
+  cursor: row-resize;
 }
 
 .split.resizeable.horizontal > .splitter {
-  cursor: e-resize;
+  cursor: col-resize;
 }
