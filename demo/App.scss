@@ -72,7 +72,7 @@ body {
 
 .controls button.active::after {
   left: 10%;
-  width: 80%;
+  right: 10%;
 }
 
 .layout-container > .drag.dragging {

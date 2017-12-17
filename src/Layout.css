@@ -4,7 +4,6 @@
   flex: 1 0 auto;
   overflow: hidden;
   position: relative;
-  height: 100%;
 }
 
 .layout-container > .preview {
@@ -17,8 +16,10 @@
 .layout-container > .views {
   display: flex;
   position: absolute;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .layout-container > .drag {
@@ -26,7 +27,7 @@
   margin: 0;
   padding: 0;
   display: none;
-  cursor: grabbing;
+  cursor: move;
 }
 
 /* child of drag */
