@@ -20,6 +20,7 @@
 <script>
 import Vue from 'vue'
 import {Layout, Pane} from '../src'
+import '../src/style.css'
 
 var MyInput = Vue.component('MyInput', {
   data () {

@@ -4,8 +4,10 @@ import Tree from './tree'
 import _ from 'lodash' // Just for deepClone?
 import './Layout.css'
 
+//  This is a conversion that was made from purejs to react and now in vue
+//
 // I know its not ideal to mess with the DOM, but it doesn't seem to exist a
-// clean way to reparent components in react without losing DOM state.
+// clean way to reparent components in react/vue without losing DOM state.
 // My objective here was keep updating views either in DOM (e.g input box) or
 // simple on a component as shown on <Clock /> example
 //
@@ -52,9 +54,6 @@ function checkAttach (targetDom, e, amount) {
 
 export default Vue.component('Layout', {
   props: ['edit', 'resize', 'splits'],
-  created () {
-    this.views = this.$slots.default.filter(v => v.tag !== undefined)
-  },
   data () {
     const root = []
     const tree = Tree.from(root)
@@ -77,11 +76,21 @@ export default Vue.component('Layout', {
       }
     }
   },
+  created () {
+    this.views = this.$slots.default.filter(v => v.tag !== undefined)
+  },
+  beforeUpdate () {
+    if (!this.$refs.container) { return }
+    var els = this.$refs.container.querySelectorAll('[target-view]')
+    Array.from(els).forEach((e, i) => {
+      var el = this.$refs.container.querySelector('[src-view=' + e.getAttribute('target-view') + ']')
+      el.appendChild(e.children[0])
+    })
+  },
+
   methods: {
     // wait on this
     onSplitResize (e, split, size) {
-      console.log('Split resizing:', split, size)
-      // Slow probably
       const nodeId = split.props['node-id']
       this.setState(ps => {
         const node = Tree.from(ps.nodes).findById(nodeId)
@@ -126,8 +135,8 @@ export default Vue.component('Layout', {
         this.$refs.preview.style[k] = previewPos[k] + 'px'
       }
     },
-
     onViewDragStart (e) { // We could pass dom here?
+      if (e.button !== 0) return
       const nodeId = parseInt(e.target.getAttribute('node-id'), 10)
       if (nodeId === undefined) {
         return
@@ -155,12 +164,12 @@ export default Vue.component('Layout', {
       this.$refs.drag.style.width = trect.width + 'px'
       this.$refs.drag.style.height = trect.height + 'px'
 
-      // Initialize event
       document.addEventListener('mousemove', this.onViewDrag)
       document.addEventListener('mouseup', this.onViewDrop)
     },
 
     onViewDrag (e) {
+      if (e.button !== 0) return
       e.preventDefault()
       e.stopPropagation()
       this.drag.over = null // reset over
@@ -194,6 +203,7 @@ export default Vue.component('Layout', {
       this.previewPane(attach, viewDom)
     },
     onViewDrop (e) {
+      if (e.button !== 0) return
       document.removeEventListener('mousemove', this.onViewDrag)
       document.removeEventListener('mouseup', this.onViewDrop)
       // this.$refs.drag.style.pointerEvents = 'none'
@@ -202,7 +212,7 @@ export default Vue.component('Layout', {
         this.$refs.drag.style.left = this.$refs.drag.style.width =
         this.$refs.drag.style.height = 0
 
-      this.previewPane(-1) // disable preview
+      this.previewPane(-1)
       if (this.drag.over == null) {
         this.drag = null
         this.state.nodes = this.state.savedNodes // rollback
@@ -217,16 +227,8 @@ export default Vue.component('Layout', {
     }
 
   },
-  // DOM VUE/REACT HACK
-  beforeUpdate () {
-    if (!this.$refs.container) { return }
-    var els = this.$refs.container.querySelectorAll('[target-view]')
-    Array.from(els).forEach((e, i) => {
-      var el = this.$refs.container.querySelector('[src-view=' + e.getAttribute('target-view') + ']')
-      el.appendChild(e.children[0])
-    })
-  },
   render () {
+    // DOM VUE/REACT HACK
     this.$nextTick(() => {
       var els = this.$refs.container.querySelectorAll('[target-view]')
       Array.from(els).forEach((e, i) => {
@@ -237,6 +239,7 @@ export default Vue.component('Layout', {
     const walk = (node) => {
       switch (node.type) {
         case 'split':
+          // recurse
           var children = Tree.from(this.state.nodes).childrenOf(node).map(k => walk(k))
           return (<Split key={node.id} node-id={node.id} resizeable={this.resize} dir={node.dir} split={node.split} onSplitResize={this.onSplitResize}>
             {children}

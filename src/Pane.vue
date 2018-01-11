@@ -1,3 +1,23 @@
+<template>
+  <div class="pane">
+    <div class="header">
+      {{ title }}
+    </div>
+    <div class="content">
+      <slot/>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    title: {type: String, default: ''}
+  }
+}
+
+</script>
+ <style scoped>
 .pane {
   position: relative;
   overflow: hidden;
@@ -30,3 +50,4 @@
   overflow: auto;
   pointer-events: initial;
 }
+</style>
