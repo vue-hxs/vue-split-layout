@@ -16,7 +16,7 @@ npm install --save vue-split-layout
 ...
 <template>
   <div id="app">
-  <Layout :splits="tree">
+  <Layout :resize="true" :edit="true" :splits="tree">
     <div class="view1"></div> <!-- 0 - view -->
     <Pane title="pane">content</Pane> <!-- 1 - view -->
     <div class="view2"></div> <!-- 2 - view -->
