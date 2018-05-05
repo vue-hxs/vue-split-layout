@@ -1,25 +1,39 @@
 <template>
   <div :class="['app', state.extraStyle?'extra':'']">
     <div class="controls">
-      <button @click="toggleEdit" :class="{active:state.edit}" >Toggle editable <span/></button>
-      <button @click="toggleResize" :class="{active:state.resize}">Toggle resizeable <span/></button>
-      <button @click="toggleBoth" :class="{active: state.edit && state.resize}">Toggle both</button>
-      <button @click="toggleStyle" :class="{active:state.extraStyle}">toggle Style</button>
+      <button
+        :class="{active:state.edit}"
+        @click="toggleEdit" >Toggle editable <span/></button>
+      <button
+        :class="{active:state.resize}"
+        @click="toggleResize">Toggle resizeable <span/></button>
+      <button
+        :class="{active: state.edit && state.resize}"
+        @click="toggleBoth">Toggle both</button>
+      <button
+        :class="{active:state.extraStyle}"
+        @click="toggleStyle">toggle Style</button>
+      <button
+        @click="changeSplits">Change layout</button>
     </div>
 
-    <Layout :edit="state.edit" :resize="state.resize" :splits="state.splits">
+    <Layout
+      :edit="state.edit"
+      :resize="state.resize"
+      :splits="state.splits">
       <div class="nopane">
         <div>Also drag me on the gray area<button>random button </button><ul><li>Random</li><li>list</li></ul><div>{{ state.edit }}</div></div>
       </div>
       <Pane title="Drag me">testing</Pane>
       <Pane title="Drag me too">Stuff<MyInput /></Pane>
+      <Pane title="Third">Testing dynamic split</Pane>
     </Layout>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-import {Layout, Pane} from '../src'
+import { Layout, Pane } from '../src'
 import '../src/style.css'
 
 var MyInput = Vue.component('MyInput', {
@@ -31,31 +45,54 @@ var MyInput = Vue.component('MyInput', {
   template: `<div><div>{{value}}</div><input type='text' v-model='value'></div>`
 })
 
+// Sample layouts
+// split:'20%' means first pane will be 20% second the rest
+// note that:
+//   vertical first node is top, second is bottom
+//   horizontal first node is left, second is right
+// And still need to figure out a better way to define the splits
+const layouts = [
+  {
+    dir: 'horizontal',
+    first: {
+      dir: 'vertical',
+      first: 0,
+      second: 2
+    },
+    second: 1
+  },
+  // Second layout
+  {
+    dir: 'horizontal',
+    first: {
+      dir: 'vertical',
+      first: { dir: 'horizontal', first: 0, second: 3, split: '20%' },
+      second: 2
+    },
+    second: 1
+  }
+]
+
 export default {
   name: 'App',
-  components: {Layout, Pane, MyInput},
+  components: { Layout, Pane, MyInput },
   data () {
-    const splits = {
-      dir: 'horizontal',
-      first: {
-        dir: 'vertical',
-        first: 0,
-        second: 2
-      },
-      second: 1
-    }
     return {
       state: {
         extraStyle: false,
         edit: true,
         resize: true,
-        splits: splits
+        splits: layouts[0],
+        layoutN: 0
       },
       hi: 'world'
-
     }
   },
   methods: {
+    changeSplits () {
+      this.state.layoutN = (this.state.layoutN + 1) % layouts.length
+      this.state.splits = layouts[this.state.layoutN]
+    },
     toggleEdit () {
       this.state.edit = !this.state.edit
     },
@@ -72,11 +109,10 @@ export default {
     toggleStyle () {
       this.state.extraStyle = !this.state.extraStyle
     }
-
   }
 }
 </script>
 
 <style>
-@import './App.scss';
+@import "./App.scss";
 </style>

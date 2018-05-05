@@ -1,7 +1,7 @@
 {
   "name": "vue-split-layout",
   "description": "vue split drag layout",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "main": "dist/vue-split-layout.js",
   "author": {
     "name": "Luis Figueiredo",
@@ -13,18 +13,16 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server  --hot --content-base demo/dist",
+    "dev":
+      "cross-env NODE_ENV=development webpack-dev-server  --hot --content-base demo/dist",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "build-demo": "cross-env NODE_ENV=development webpack --progress --hide-modules"
+    "build-demo":
+      "cross-env NODE_ENV=development webpack --progress --hide-modules"
   },
   "dependencies": {
     "vue": "^2.4.4"
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ],
+  "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"],
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",

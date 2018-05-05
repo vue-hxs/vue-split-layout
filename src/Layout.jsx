@@ -53,27 +53,21 @@ function checkAttach (targetDom, e, amount) {
 }
 
 export default Vue.component('Layout', {
-  props: ['edit', 'resize', 'splits'],
+  props: {
+    'edit': {type: Boolean, default: true},
+    'resize': {type: Boolean, default: true},
+    'splits': {type: Object, default: () => ({})}
+  },
   data () {
-    const root = []
-    const tree = Tree.from(root)
-    const walk = (node) => {
-      // See node check if object or viewId
-      if (node instanceof Object) {
-        let split = tree.push({type: 'split', dir: node.dir, split: node.size})
-        walk(node.first).parent = split
-        walk(node.second).parent = split
-        return split
-      }
-      return tree.push({type: 'view', viewId: node})
-      // Its a view, with only id
-    }
-    walk(this.splits)
-    // Read splits properly
     return {
       state: {
-        nodes: root // this is an array
+        nodes: this.calcSplits()
       }
+    }
+  },
+  watch: {
+    splits () {
+      this.state.nodes = this.calcSplits()
     }
   },
   created () {
@@ -87,8 +81,25 @@ export default Vue.component('Layout', {
       el.appendChild(e.children[0])
     })
   },
-
   methods: {
+    // Transform input into internal format
+    calcSplits () {
+      const root = []
+      const tree = Tree.from(root)
+      const walk = (node) => {
+        // See node check if object or viewId
+        if (node instanceof Object) {
+          let split = tree.push({type: 'split', dir: node.dir, split: node.split})
+          walk(node.first).parent = split
+          walk(node.second).parent = split
+          return split
+        }
+        return tree.push({type: 'view', viewId: node})
+      }
+      walk(this.splits)
+
+      return root
+    },
     // wait on this
     onSplitResize (e, split, size) {
       const nodeId = split.props['node-id']
@@ -232,7 +243,9 @@ export default Vue.component('Layout', {
     this.$nextTick(() => {
       var els = this.$refs.container.querySelectorAll('[target-view]')
       Array.from(els).forEach((e, i) => {
-        e.appendChild(this.$refs.container.querySelector('[src-view=' + e.getAttribute('target-view') + ']').children[0])
+        const srcView = this.$refs.container.querySelector('[src-view=' + e.getAttribute('target-view') + ']')
+        if (!srcView) return
+        e.appendChild(srcView.children[0])
       })
     })
     // Layout renderer, build children
