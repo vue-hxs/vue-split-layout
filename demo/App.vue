@@ -27,6 +27,15 @@
       <Pane title="Drag me">testing</Pane>
       <Pane title="Drag me too">Stuff<MyInput /></Pane>
       <Pane title="Third">Testing dynamic split</Pane>
+      <div class="custom-drag">
+        <div class="container">
+          testing a drag handle
+          <div
+            class="drag-handle"
+            pane-drag>DRAG HERE</div>
+          test
+        </div>
+      </div>
     </Layout>
   </div>
 </template>
@@ -59,7 +68,11 @@ const layouts = [
       first: 0,
       second: 2
     },
-    second: 1
+    second: {
+      dir: 'horizontal',
+      first: 4,
+      second: 1
+    }
   },
   // Second layout
   {
@@ -113,6 +126,5 @@ export default {
 }
 </script>
 
-<style>
-@import "./App.scss";
+<style type="scss" src="./App.scss">
 </style>

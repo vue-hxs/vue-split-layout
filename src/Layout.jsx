@@ -148,10 +148,29 @@ export default Vue.component('Layout', {
     },
     onViewDragStart (e) { // We could pass dom here?
       if (e.button !== 0) return
-      const nodeId = parseInt(e.target.getAttribute('node-id'), 10)
+
+      const nodeIdAttr = e.target.hasAttribute('node-id')
+      const dragAttr = e.target.hasAttribute('pane-drag')
+      if (!nodeIdAttr && !dragAttr) return
+
+      var el = e.target
+      if (!nodeIdAttr) { // Find parent with node-id attr
+        var viewDom = el
+        for (; viewDom && viewDom.matches && !viewDom.hasAttribute('node-id'); viewDom = viewDom.parentNode) {}
+        if (!viewDom || !viewDom.matches) {
+          return
+        }
+        el = viewDom
+      }
+
+      const nodeId = parseInt(el.getAttribute('node-id'), 10)
       if (nodeId === undefined) {
         return
       }
+
+      // find parent
+
+      // Go up
       const node = this.state.nodes.find(n => { return n.id === nodeId })
       if (node === undefined) {
         return
@@ -248,15 +267,18 @@ export default Vue.component('Layout', {
         e.appendChild(srcView.children[0])
       })
     })
+
     // Layout renderer, build children
     const walk = (node) => {
       switch (node.type) {
         case 'split':
           // recurse
           var children = Tree.from(this.state.nodes).childrenOf(node).map(k => walk(k))
-          return (<Split key={node.id} node-id={node.id} resizeable={this.resize} dir={node.dir} split={node.split} onSplitResize={this.onSplitResize}>
-            {children}
-          </Split>)
+          return (
+            <Split key={node.id} node-id={node.id} resizeable={this.resize} dir={node.dir} split={node.split} onSplitResize={this.onSplitResize}>
+              {children}
+            </Split>
+          )
         default:
           if (this.edit) {
             return (<div class={'view'} node-id={node.id} target-view={'view-' + node.viewId} onmousedown={this.onViewDragStart}></div>)
