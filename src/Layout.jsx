@@ -70,9 +70,6 @@ export default Vue.component('Layout', {
       this.state.nodes = this.calcSplits()
     }
   },
-  created () {
-    this.views = this.$slots.default.filter(v => v.tag !== undefined)
-  },
   beforeUpdate () {
     if (!this.$refs.container) { return }
     var els = this.$refs.container.querySelectorAll('[target-view]')
@@ -310,7 +307,7 @@ export default Vue.component('Layout', {
           }
         </div>
         <div style={{display: 'none'}}>
-          {this.views.map((view, i) => {
+          {this.$slots.default.filter(v => v.tag !== undefined).map((view, i) => {
             return (<div key={i} src-view={'view-' + i}> {view} </div>)
           })}
         </div>
