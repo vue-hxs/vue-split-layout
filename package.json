@@ -17,7 +17,8 @@
       "cross-env NODE_ENV=development webpack-dev-server  --hot --content-base demo/dist",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "build-demo":
-      "cross-env NODE_ENV=development webpack --progress --hide-modules"
+      "cross-env NODE_ENV=development webpack --progress --hide-modules",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "vue": "^2.4.4"
