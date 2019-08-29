@@ -56,7 +56,7 @@ export default Vue.component('Layout', {
   props: {
     'edit': {type: Boolean, default: true},
     'resize': {type: Boolean, default: true},
-    'splits': {type: Object, default: () => ({})}
+    'splits': {type: [String, Number, Object], default: () => ({})}
   },
   data () {
     return {
