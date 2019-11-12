@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Split from './Split'
 import Tree from './tree'
-import _ from 'lodash' // Just for deepClone?
+import cloneDeep from 'lodash/cloneDeep'
 import './Layout.css'
 
 //  This is a conversion that was made from purejs to react and now in vue
@@ -182,7 +182,7 @@ export default Vue.component('Layout', {
         node: node,
         offset: {x: e.clientX - trect.left, y: e.clientY - trect.top}
       }
-      this.state.savedNodes = _.cloneDeep(this.state.nodes)
+      this.state.savedNodes = cloneDeep(this.state.nodes)
       Tree.from(this.state.nodes).removeChild(node)
 
       // Direct DOM because its faster and we don't need state
