@@ -257,12 +257,14 @@ export default Vue.component('Layout', {
   render () {
     // DOM VUE/REACT HACK
     this.$nextTick(() => {
+      this.$emit('layout:begin')
       var els = this.$refs.container.querySelectorAll('[target-view]')
       Array.from(els).forEach((e, i) => {
         const srcView = this.$refs.container.querySelector('[src-view=' + e.getAttribute('target-view') + ']')
         if (!srcView) return
         e.appendChild(srcView.children[0])
       })
+      this.$emit('layout:complete')
     })
 
     // Layout renderer, build children
