@@ -310,7 +310,7 @@ export default Vue.component('Layout', {
         </div>
         <div style={{display: 'none'}}>
           {this.$slots.default.filter(v => v.tag !== undefined).map((view, i) => {
-            return (<div key={i} src-view={'view-' + i}> {view} </div>)
+            return (<div key={view.key || i} src-view={'view-' + (view.key || i)}> {view} </div>)
           })}
         </div>
       </div>
