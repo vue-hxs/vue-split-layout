@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Split from './Split'
 import Tree from './tree'
-import _ from 'lodash' // Just for deepClone?
+import cloneDeep from 'lodash/cloneDeep'
 import './Layout.css'
 
 //  This is a conversion that was made from purejs to react and now in vue
@@ -182,7 +182,7 @@ export default Vue.component('Layout', {
         node: node,
         offset: {x: e.clientX - trect.left, y: e.clientY - trect.top}
       }
-      this.state.savedNodes = _.cloneDeep(this.state.nodes)
+      this.state.savedNodes = cloneDeep(this.state.nodes)
       Tree.from(this.state.nodes).removeChild(node)
 
       // Direct DOM because its faster and we don't need state
@@ -257,12 +257,14 @@ export default Vue.component('Layout', {
   render () {
     // DOM VUE/REACT HACK
     this.$nextTick(() => {
+      this.$emit('layout:begin')
       var els = this.$refs.container.querySelectorAll('[target-view]')
       Array.from(els).forEach((e, i) => {
         const srcView = this.$refs.container.querySelector('[src-view=' + e.getAttribute('target-view') + ']')
         if (!srcView) return
         e.appendChild(srcView.children[0])
       })
+      this.$emit('layout:complete')
     })
 
     // Layout renderer, build children
@@ -308,7 +310,7 @@ export default Vue.component('Layout', {
         </div>
         <div style={{display: 'none'}}>
           {this.$slots.default.filter(v => v.tag !== undefined).map((view, i) => {
-            return (<div key={i} src-view={'view-' + i}> {view} </div>)
+            return (<div key={view.key || i} src-view={'view-' + (view.key || i)}> {view} </div>)
           })}
         </div>
       </div>
