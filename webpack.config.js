@@ -1,9 +1,10 @@
-var path = require('path')
-var webpack = require('webpack')
-var VueLoaderPlugin = require('vue-loader/lib/plugin')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require('path')
+const webpack = require('webpack')
+const { merge } = require('webpack-merge')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-module.exports = {
+const common = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -45,56 +46,48 @@ module.exports = {
     },
     extensions: ['*', '.js', '.vue', '.json', '.jsx']
   },
-  devServer: {
-    host: '0.0.0.0',
-    disableHostCheck: true,
-    historyApiFallback: true,
-    noInfo: true,
-    overlay: true,
-    clientLogLevel: 'none'
-  },
   performance: {
     hints: false
   },
   plugins: [new VueLoaderPlugin()],
-  devtool: '#eval-source-map'
+  devtool: 'source-map'
 }
 
 if (process.env.NODE_ENV === 'development') {
-  Object.assign(module.exports, {
+  module.exports = merge(common, {
+    mode: 'development',
     entry: './demo/main.js',
     output: {
       path: path.resolve(__dirname, './docs'),
       publicPath: '/vue-split-layout/',
       filename: 'index.js'
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template: 'demo/index.html'
+      })
+    ],
+    devServer: {
+      historyApiFallback: true,
+      static: path.join(__dirname, './demo/dist')
     }
   })
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'demo/index.html'
-    })
-  ])
 }
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ])
-  module.exports.externals = { vue: 'vue' }
+  module.exports = merge(common, {
+    mode: 'production',
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: '"production"'
+        }
+      }),
+      new webpack.LoaderOptionsPlugin({
+        minimize: true
+      })
+    ],
+    externals: { vue: 'vue' }
+  })
 }
