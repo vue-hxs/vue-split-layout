@@ -3,7 +3,6 @@
   "description": "vue split drag layout",
   "version": "0.0.14",
   "main": "dist/vue-split-layout.js",
-  "module": "src/index.js",
   "author": {
     "name": "Luis Figueiredo",
     "email": "luisf@hexasoftware.com"
