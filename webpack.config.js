@@ -1,5 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
+var VueLoaderPlugin = require('vue-loader/lib/plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
@@ -14,17 +15,13 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          'vue-style-loader',
-          'css-loader'
-        ]
+        use: ['vue-style-loader', 'css-loader']
       },
       {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {
-          loaders: {
-          }
+          loaders: {}
           // other vue-loader options go here
         }
       },
@@ -44,7 +41,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm.js'
+      vue$: 'vue/dist/vue.esm.js'
     },
     extensions: ['*', '.js', '.vue', '.json', '.jsx']
   },
@@ -59,6 +56,7 @@ module.exports = {
   performance: {
     hints: false
   },
+  plugins: [new VueLoaderPlugin()],
   devtool: '#eval-source-map'
 }
 
@@ -72,7 +70,10 @@ if (process.env.NODE_ENV === 'development') {
     }
   })
   module.exports.plugins = (module.exports.plugins || []).concat([
-    new HtmlWebpackPlugin({ filename: 'index.html', template: 'demo/index.html' })
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'demo/index.html'
+    })
   ])
 }
 
@@ -95,5 +96,5 @@ if (process.env.NODE_ENV === 'production') {
       minimize: true
     })
   ])
-  module.exports.externals = { 'vue': 'vue' }
+  module.exports.externals = { vue: 'vue' }
 }
