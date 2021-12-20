@@ -647,7 +647,7 @@ function checkAttach(targetDom, e, amount) {
       { 'class': layoutClass.join(' '), ref: 'container' },
       [h(
         'div',
-        { 'class': 'views', ref: 'views' },
+        { 'class': 'views ' + (this.drag ? 'dragging' : ''), ref: 'views' },
         [tree]
       ), h('div', { 'class': 'preview', ref: 'preview' }), h(
         'div',

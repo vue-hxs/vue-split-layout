@@ -292,7 +292,7 @@ export default Vue.component('Layout', {
     ]
     return (
       <div class={layoutClass.join(' ')} ref="container">
-        <div class="views" ref="views">
+        <div class={'views ' + (this.drag ? 'dragging' : '')} ref="views">
           {tree}
         </div>
         <div class="preview" ref="preview"></div>
