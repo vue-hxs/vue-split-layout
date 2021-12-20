@@ -1,7 +1,7 @@
 {
   "name": "vue-split-layout",
   "description": "vue split drag layout",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "main": "dist/vue-split-layout.js",
   "author": {
     "name": "Luis Figueiredo",
