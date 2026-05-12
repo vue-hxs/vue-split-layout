@@ -1,10 +1,16 @@
 # vue-split-layout
 
+> [!IMPORTANT]
+> **Vue 3 Support Available!**
+> This project has been ported to Vue 3. For modern applications, please use the new package:
+> **NPM:** [@edvanta/vue-split-layout-v3](https://www.npmjs.com/package/@edvanta/vue-split-layout-v3)
+> **GitHub:** [thoughtjumper/vue-split-layout-v3](https://github.com/thoughtjumper/vue-split-layout-v3)
+
 > vue split drag layout
 
 [https://vue-hxs.github.io/vue-split-layout/](https://vue-hxs.github.io/vue-split-layout/)
 
-## Install
+## Install (Vue 2)
 
 ```bash
 npm install --save vue-split-layout
