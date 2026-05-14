@@ -103,7 +103,6 @@ export default Vue.component('Layout', {
       this.setState(ps => {
         const node = Tree.from(ps.nodes).findById(nodeId)
         node.split = size
-        console.log('MY TOKEN', this.state);
         return ps
       })
     },
