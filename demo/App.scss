@@ -75,6 +75,11 @@ body {
   right: 10%;
 }
 
+.controls .layout-count {
+  color: #fff;
+  margin: 8px;
+}
+
 .layout-container > .drag.dragging {
   z-index: 20;
   cursor: move;

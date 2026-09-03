@@ -16,6 +16,7 @@
     "dev": "cross-env NODE_ENV=development webpack serve",
     "build": "cross-env NODE_ENV=production webpack --progress",
     "build-demo": "cross-env NODE_ENV=development webpack --progress",
+    "test": "npm run build && node --test test/rendering.js",
     "prepare": "npm run build"
   },
   "dependencies": {
@@ -49,6 +50,7 @@
     "eslint-plugin-vue": "^4.0.0-beta.2",
     "file-loader": "^1.1.4",
     "html-webpack-plugin": "^5.5.0",
+    "jsdom": "^16.7.0",
     "vue-loader": "^15.9.8",
     "vue-template-compiler": "^2.6.14",
     "webpack": "^5.65.0",

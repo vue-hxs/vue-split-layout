@@ -53,11 +53,39 @@ export default {
 ...
 ```
 
+## Saving layout changes
+
+`Layout` emits `layout:change` after a view is dropped or a splitter resize is
+finished. The event payload uses the same tree format accepted by `splits`, so
+it can be stored and supplied to the layout again.
+
+```vue
+<Layout
+  :splits="tree"
+  @layout:change="saveLayout">
+  ...
+</Layout>
+```
+
+```js
+export default {
+  data () {
+    return {
+      tree: JSON.parse(localStorage.getItem('layout')) || initialLayout
+    }
+  },
+  methods: {
+    saveLayout (tree) {
+      this.tree = tree
+      localStorage.setItem('layout', JSON.stringify(tree))
+    }
+  }
+}
+```
+
 ## TODO
 
 * [ ] Better way for naming views instead of their indexes
-* [ ] Improve rendering, if a view state(props) is update outside layout, the
-      view isn't updated
-* [ ] Persist creating an change $emit with possibily the tree json (also for
-      split)
+* [x] Keep views updated when their state or props change outside the layout
+* [x] Emit the updated tree after views move or splitters resize
 * [ ] Makes views draggable from some menu so we can add new views

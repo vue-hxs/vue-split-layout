@@ -37,8 +37,8 @@ export default {
         var splitter = (h ? this.$el.children[1].clientWidth : this.$el.children[1].clientHeight) / 2
         var parentRect = this.$el.getBoundingClientRect()
         var splitSize = h
-          ? (event.x - parentRect.left - splitter) / this.$el.clientWidth * 100
-          : (event.y - parentRect.top - splitter) / this.$el.clientHeight * 100
+          ? (event.clientX - parentRect.left - splitter) / this.$el.clientWidth * 100
+          : (event.clientY - parentRect.top - splitter) / this.$el.clientHeight * 100
         this.state.split = splitSize + '%'
         this.$emit('onSplitResize', event, this, this.state.split)
       }
@@ -47,6 +47,7 @@ export default {
         this.state.resizing = false
         document.removeEventListener('mousemove', drag)
         document.removeEventListener('mouseup', drop)
+        this.$emit('onSplitResizeEnd', event, this, this.state.split)
       }
       document.addEventListener('mousemove', drag)
       document.addEventListener('mouseup', drop)
