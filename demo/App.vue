@@ -14,13 +14,21 @@
         :class="{active:state.extraStyle}"
         @click="toggleStyle">toggle Style</button>
       <button
-        @click="changeSplits">Change layout</button>
+        @click="changeSplits">Next layout</button>
+      <button
+        @click="saveLayout">Save layout</button>
+      <button
+        @click="addLayout">Add layout</button>
+      <span class="layout-count">
+        Layout {{ state.layoutN + 1 }} of {{ layouts.length }}
+      </span>
     </div>
 
     <Layout
       :edit="state.edit"
       :resize="state.resize"
-      :splits="state.splits">
+      :splits="state.splits"
+      @layout:change="updateLayout">
       <div class="nopane">
         <div>Also drag me on the gray area<button>random button </button><ul><li>Random</li><li>list</li></ul><div>{{ state.edit }}</div></div>
       </div>
@@ -60,7 +68,8 @@ var MyInput = Vue.component('MyInput', {
 //   vertical first node is top, second is bottom
 //   horizontal first node is left, second is right
 // And still need to figure out a better way to define the splits
-const layouts = [
+const storageKey = 'vue-split-layout-demo:layouts'
+const defaultLayouts = [
   {
     dir: 'horizontal',
     first: {
@@ -86,25 +95,57 @@ const layouts = [
   }
 ]
 
+function cloneLayout (layout) {
+  return JSON.parse(JSON.stringify(layout))
+}
+
+function loadLayouts () {
+  if (typeof window === 'undefined') return defaultLayouts.map(cloneLayout)
+
+  try {
+    const layouts = JSON.parse(window.localStorage.getItem(storageKey))
+    if (Array.isArray(layouts) && layouts.length > 0) return layouts
+  } catch (e) {}
+
+  return defaultLayouts.map(cloneLayout)
+}
+
 export default {
   name: 'App',
   components: { Layout, Pane, MyInput },
   data () {
+    const layouts = loadLayouts()
     return {
+      layouts,
       state: {
         extraStyle: false,
         edit: true,
         resize: true,
-        splits: layouts[0],
+        splits: cloneLayout(layouts[0]),
         layoutN: 0
       },
       hi: 'world'
     }
   },
   methods: {
+    updateLayout (splits) {
+      this.state.splits = splits
+    },
+    persistLayouts () {
+      window.localStorage.setItem(storageKey, JSON.stringify(this.layouts))
+    },
+    saveLayout () {
+      this.$set(this.layouts, this.state.layoutN, cloneLayout(this.state.splits))
+      this.persistLayouts()
+    },
+    addLayout () {
+      this.layouts.push(cloneLayout(this.state.splits))
+      this.state.layoutN = this.layouts.length - 1
+      this.persistLayouts()
+    },
     changeSplits () {
-      this.state.layoutN = (this.state.layoutN + 1) % layouts.length
-      this.state.splits = layouts[this.state.layoutN]
+      this.state.layoutN = (this.state.layoutN + 1) % this.layouts.length
+      this.state.splits = cloneLayout(this.layouts[this.state.layoutN])
     },
     toggleEdit () {
       this.state.edit = !this.state.edit

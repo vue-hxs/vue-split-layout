@@ -75,6 +75,7 @@ export default Vue.component('Layout', {
     var els = this.$refs.container.querySelectorAll('[target-view]')
     Array.from(els).forEach((e, i) => {
       var el = this.$refs.container.querySelector('[src-view=' + e.getAttribute('target-view') + ']')
+      if (!el || !e.children[0]) return
       el.appendChild(e.children[0])
     })
   },
@@ -97,14 +98,41 @@ export default Vue.component('Layout', {
 
       return root
     },
-    // wait on this
+    serializeSplits () {
+      const tree = Tree.from(this.state.nodes)
+      const walk = (node) => {
+        if (node.type === 'view') {
+          return node.viewId
+        }
+
+        const children = tree.childrenOf(node)
+        const split = {
+          dir: node.dir,
+          first: walk(children[0]),
+          second: walk(children[1])
+        }
+
+        if (node.split !== undefined) {
+          split.split = node.split
+        }
+
+        return split
+      }
+
+      return walk(this.state.nodes[0])
+    },
+    emitLayoutChange () {
+      this.$emit('layout:change', this.serializeSplits())
+    },
     onSplitResize (e, split, size) {
-      const nodeId = split.props['node-id']
-      this.setState(ps => {
-        const node = Tree.from(ps.nodes).findById(nodeId)
-        node.split = size
-        return ps
-      })
+      const nodeId = split.$attrs['node-id']
+      const node = Tree.from(this.state.nodes).findById(nodeId)
+      if (!node) return
+      node.split = size
+    },
+    onSplitResizeEnd (e, split, size) {
+      this.onSplitResize(e, split, size)
+      this.emitLayoutChange()
     },
     previewPane (attach, targetDom, amount) {
       if (attach === -1) {
@@ -251,6 +279,7 @@ export default Vue.component('Layout', {
       var node = tree.findById(nodeId)
       tree.attachChild(node, attach, this.drag.node)
       this.drag = null
+      this.emitLayoutChange()
     }
 
   },
@@ -261,7 +290,7 @@ export default Vue.component('Layout', {
       var els = this.$refs.container.querySelectorAll('[target-view]')
       Array.from(els).forEach((e, i) => {
         const srcView = this.$refs.container.querySelector('[src-view=' + e.getAttribute('target-view') + ']')
-        if (!srcView) return
+        if (!srcView || !srcView.children[0]) return
         e.appendChild(srcView.children[0])
       })
       this.$emit('layout:complete')
@@ -274,7 +303,15 @@ export default Vue.component('Layout', {
           // recurse
           var children = Tree.from(this.state.nodes).childrenOf(node).map(k => walk(k))
           return (
-            <Split key={node.id} node-id={node.id} resizeable={this.resize} dir={node.dir} split={node.split} onSplitResize={this.onSplitResize}>
+            <Split
+              key={node.id}
+              node-id={node.id}
+              resizeable={this.resize}
+              dir={node.dir}
+              split={node.split}
+              {...{on: {
+                onSplitResizeEnd: this.onSplitResizeEnd
+              }}}>
               {children}
             </Split>
           )
